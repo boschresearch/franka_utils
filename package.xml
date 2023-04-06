@@ -11,6 +11,8 @@
   <author email="Christian.Rauch@de.bosch.com">Christian Rauch</author>
 
   <depend>libfranka</depend>
+  <depend>liburdfdom-headers-dev</depend>
+  <depend>eigen</depend>
 
   <export>
     <build_type>cmake</build_type>
