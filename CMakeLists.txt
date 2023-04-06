@@ -25,7 +25,9 @@ endif()
 # find dependencies
 find_package(Franka REQUIRED)
 find_package(urdfdom_headers REQUIRED)
+find_package(urdfdom REQUIRED)
 find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_executable(compute_lumped_inertia src/compute_lumped_inertia.cpp)
-target_link_libraries(compute_lumped_inertia urdfdom_headers::urdfdom_headers Eigen3::Eigen)
+target_link_libraries(compute_lumped_inertia urdfdom_headers::urdfdom_headers urdfdom_model Eigen3::Eigen Franka::Franka)
+install(TARGETS compute_lumped_inertia DESTINATION bin)

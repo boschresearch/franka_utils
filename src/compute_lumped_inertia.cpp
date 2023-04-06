@@ -1,6 +1,9 @@
 #include <Eigen/Dense>
+#include <franka/exception.h>
+#include <franka/robot.h>
 #include <iostream>
 #include <urdf_model/model.h>
+#include <urdf_parser/urdf_parser.h>
 
 /*!
  * Returns skew-symmetric matrix for a given vector.
@@ -183,4 +186,66 @@ bool compute_lumped_inertia(urdf::LinkConstSharedPtr link,
   return true;
 }
 
-int main(int argc, char *argv[]) { return 0; }
+int main(int argc, char *argv[]) {
+  if (argc < 2 || argc > 3) {
+    std::cout << "usage '" << argv[0] << " $URDF_PATH $ROBOT_IP'" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  std::unique_ptr<franka::Robot> robot = nullptr;
+
+  if (argc == 3) {
+    std::cout << "connecting to: " << argv[2] << std::endl;
+    try {
+      robot = std::make_unique<franka::Robot>(argv[2]);
+    } catch (const franka::NetworkException &e) {
+      robot = nullptr;
+      std::cerr << "Franka not reachable: " << e.what() << std::endl;
+    }
+  }
+
+  if (robot) {
+    const franka::RobotState robot_state = robot->readOnce();
+    std::cout << "Franka current state: " << std::endl
+              << robot_state << std::endl;
+  }
+
+  // parse URDF as file path or as content string
+  std::shared_ptr<urdf::ModelInterface> urdf_model = nullptr;
+  // try by file path
+  urdf_model = urdf::parseURDFFile(argv[1]);
+  // try by content string
+  if (!urdf_model)
+    urdf_model = urdf::parseURDF(argv[1]);
+  if (!urdf_model) {
+    std::cerr << "error reading: " << argv[1] << std::endl;
+    return EXIT_FAILURE;
+  }
+  urdf::LinkConstSharedPtr root_link =
+      urdf_model->getLink("panda_link8"); /// Flange (has no inertia info)
+
+  Eigen::Matrix4d T0 = Eigen::Matrix4d::Identity();
+  double load_mass = 0;
+  std::array<double, 3> F_x_Cload;
+  std::array<double, 9> load_inertia;
+  Eigen::Map<Eigen::Vector3d> com(F_x_Cload.data());
+  Eigen::Map<Eigen::Matrix3d> I(load_inertia.data());
+
+  if (compute_lumped_inertia(root_link, *urdf_model, T0, load_mass, com, I)) {
+    std::cout << "URDF load mass: " << load_mass << std::endl;
+    Eigen::Map<Eigen::Matrix3d> load_inertia__(load_inertia.data());
+    std::cout << "URDF load inertia: " << std::endl
+              << load_inertia__ << std::endl;
+    Eigen::Map<Eigen::Vector3d> F_x_Cload__(F_x_Cload.data());
+    std::cout << "URDF load CoM: " << F_x_Cload__.transpose() << std::endl;
+
+    if (robot) {
+      robot->setLoad(load_mass, F_x_Cload, load_inertia);
+    }
+    return EXIT_SUCCESS;
+  } else {
+    std::cerr << "Could not set lumped end-effector inertia. Shutting down ..."
+              << std::endl;
+    return EXIT_FAILURE;
+  }
+}

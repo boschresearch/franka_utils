@@ -12,6 +12,7 @@
 
   <depend>libfranka</depend>
   <depend>liburdfdom-headers-dev</depend>
+  <depend>liburdfdom-dev</depend>
   <depend>eigen</depend>
 
   <export>
