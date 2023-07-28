@@ -30,4 +30,11 @@ find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_executable(compute_lumped_inertia src/compute_lumped_inertia.cpp)
 target_link_libraries(compute_lumped_inertia urdfdom_headers::urdfdom_headers urdfdom_model Eigen3::Eigen Franka::Franka)
-install(TARGETS compute_lumped_inertia DESTINATION bin)
+
+add_executable(set_collision_behaviour src/set_collision_behaviour.cpp)
+target_link_libraries(set_collision_behaviour Franka::Franka)
+
+install(TARGETS
+    compute_lumped_inertia
+    set_collision_behaviour
+  DESTINATION bin)
