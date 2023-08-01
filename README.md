@@ -17,8 +17,9 @@ This will compute the end-effector properties from the robot description and pri
 
 ## F/T thresholds
 
-The executable `set_collision_behaviour` sets the torque and force threshold via the `franka::Robot::setCollisionBehavior` method:
+The executable `set_collision_behaviour` sets the torque and force threshold via the `franka::Robot::setCollisionBehavior` method. It uses a ratio to scale the default F/T thresholds. To set the threshold to 5 times the default:
 ```sh
-set_collision_behaviour 172.16.0.2 100
+# set_collision_behaviour $ROBOT_IP $THRESHOLD_SCALE
+set_collision_behaviour 172.16.0.2 5.0
 ```
 This is useful when interacting with stiff objects and expecting large than default contact forces.
