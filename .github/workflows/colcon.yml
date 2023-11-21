@@ -1,0 +1,39 @@
+name: colcon
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: osrf/ros:humble-desktop
+
+    steps:
+    - name: install dependencies
+      run: |
+        apt update
+        apt -y install lcov python3-colcon-coveragepy-result python3-colcon-lcov-result
+        apt -y install ninja-build
+
+    - name: install libfranka
+      run: |
+        apt install -y libpoco-dev libeigen3-dev
+        git clone --recursive https://github.com/frankaemika/libfranka.git
+        cd libfranka
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -B build
+        cmake --build build --target install
+
+    - uses: ros-tooling/action-ros-ci@v0.3
+      with:
+        package-name: franka_utils
+        target-ros2-distro: humble
+        colcon-defaults: |
+          {
+            "build": {
+              "mixin": ["asan-gcc", "tsan", "coverage-gcc", "memcheck"]
+            }
+          }
+        colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5d51dff38097e8c2bf46d7a5b804e65935aa7f47/index.yaml
+        import-token: ${{ secrets.GITHUB_TOKEN }}
