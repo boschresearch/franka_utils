@@ -21,7 +21,7 @@ struct {
 
 template <typename T, std::size_t N>
 std::array<T, N>
-multiply(const T& multiplier, const std::array<T, N>& array)
+multiply(const T &multiplier, const std::array<T, N> &array)
 {
   std::array<T, N> out;
   for (std::size_t i=0; i<N; i++)
