@@ -20,7 +20,8 @@ struct {
 
 
 template <typename T, std::size_t N>
-std::array<T, N> multiply(const T& multiplier, const std::array<T, N>& array)
+std::array<T, N>
+multiply(const T& multiplier, const std::array<T, N>& array)
 {
   std::array<T, N> out;
   for (std::size_t i=0; i<N; i++)
@@ -29,7 +30,9 @@ std::array<T, N> multiply(const T& multiplier, const std::array<T, N>& array)
 }
 
 
-int main(int argc, char *argv[]) {
+int
+main(int argc, char *argv[])
+{
   if (argc != 3) {
     std::cout << "usage '" << argv[0] << " $ROBOT_IP $THRESHOLD_SCALE'" << std::endl;
     return EXIT_FAILURE;

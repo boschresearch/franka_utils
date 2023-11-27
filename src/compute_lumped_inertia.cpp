@@ -13,7 +13,9 @@
  * @returns m 3x3 matrix.
  */
 template <typename Base>
-Eigen::Matrix3d skew(const Eigen::MatrixBase<Base> &v) {
+Eigen::Matrix3d
+skew(const Eigen::MatrixBase<Base> &v)
+{
   static_assert(Base::SizeAtCompileTime == 3,
                 "Skew Matrix has wrong dimensions");
   Eigen::Matrix3d m;
@@ -31,10 +33,12 @@ Eigen::Matrix3d skew(const Eigen::MatrixBase<Base> &v) {
  * @param I Lumped inertia tensor (output, will not be initialized).
  */
 template <typename l_t, typename I_t>
-void compute_lumped_inertia_impl(urdf::LinkConstSharedPtr link,
-                                 const urdf::ModelInterface &robot,
-                                 const Eigen::Matrix4d &T, double &m, l_t &l,
-                                 I_t &I) {
+void
+compute_lumped_inertia_impl(urdf::LinkConstSharedPtr link,
+                            const urdf::ModelInterface &robot,
+                            const Eigen::Matrix4d &T, double &m, l_t &l,
+                            I_t &I)
+{
   // Read inertia properties of link
   if (link->inertial) {
     // Parse data from URDF into Eigen objects
@@ -129,10 +133,12 @@ void compute_lumped_inertia_impl(urdf::LinkConstSharedPtr link,
  * @param I Lumped inertia tensor (output).
  */
 template <typename com_t, typename I_t>
-bool compute_lumped_inertia(urdf::LinkConstSharedPtr link,
-                            const urdf::ModelInterface &robot,
-                            const Eigen::Matrix4d &T, double &m, com_t &com,
-                            I_t &I) {
+bool
+compute_lumped_inertia(urdf::LinkConstSharedPtr link,
+                       const urdf::ModelInterface &robot,
+                       const Eigen::Matrix4d &T, double &m, com_t &com,
+                       I_t &I)
+{
   m = 0;
   I = Eigen::Matrix3d::Zero();
 
@@ -186,7 +192,9 @@ bool compute_lumped_inertia(urdf::LinkConstSharedPtr link,
   return true;
 }
 
-int main(int argc, char *argv[]) {
+int
+main(int argc, char *argv[])
+{
   if (argc < 2 || argc > 3) {
     std::cout << "usage '" << argv[0] << " $URDF_PATH $ROBOT_IP'" << std::endl;
     return EXIT_FAILURE;
