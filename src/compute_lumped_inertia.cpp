@@ -16,8 +16,7 @@ template <typename Base>
 Eigen::Matrix3d
 skew(const Eigen::MatrixBase<Base> &v)
 {
-  static_assert(Base::SizeAtCompileTime == 3,
-                "Skew Matrix has wrong dimensions");
+  static_assert(Base::SizeAtCompileTime == 3, "Skew Matrix has wrong dimensions");
   Eigen::Matrix3d m;
   m << 0, -v(2), v(1), v(2), 0, -v(0), -v(1), v(0), 0;
   return m;
@@ -61,9 +60,9 @@ compute_lumped_inertia_impl(urdf::LinkConstSharedPtr link,
     iot.template block<3, 1>(0, 3) = iop;
     iot.template block<3, 3>(0, 0) = ioq.normalized().toRotationMatrix();
     /// Mass moment of inertia tensor
-    auto Ilink = (Eigen::Matrix3d() << il.ixx, il.ixy, il.ixz, il.ixy, il.iyy,
-                  il.iyz, il.ixz, il.iyz, il.izz)
-                     .finished();
+    auto Ilink =
+      (Eigen::Matrix3d() << il.ixx, il.ixy, il.ixz, il.ixy, il.iyy, il.iyz, il.ixz, il.iyz, il.izz)
+        .finished();
 
     // Compute transformation from "root frame" to inertia frame
     Eigen::Matrix4d iot_root = T * iot;
@@ -159,17 +158,14 @@ compute_lumped_inertia(urdf::LinkConstSharedPtr link,
   auto I_eig = I_eigen_solver.eigenvalues();
   /// Mass must be positive
   if (m < 0) {
-    std::cerr << "compute_lumped_inertia: Lumped mass is negative."
-              << std::endl;
+    std::cerr << "compute_lumped_inertia: Lumped mass is negative." << std::endl;
     return false;
   }
   /// Inertia tensor must be symmetric
-  if (std::abs(I(1, 0) - I(0, 1)) + std::abs(I(2, 0) - I(0, 2)) +
-          std::abs(I(1, 2) - I(2, 1)) >
-      std::numeric_limits<double>::epsilon()) {
-    std::cerr
-        << "compute_lumped_inertia: Lumped inertia tensor is not symmetric."
-        << std::endl;
+  if (std::abs(I(1, 0) - I(0, 1)) + std::abs(I(2, 0) - I(0, 2)) + std::abs(I(1, 2) - I(2, 1)) >
+      std::numeric_limits<double>::epsilon())
+  {
+    std::cerr << "compute_lumped_inertia: Lumped inertia tensor is not symmetric." << std::endl;
     return false;
   }
   /// Inertia tensor must be positive definite
@@ -181,7 +177,8 @@ compute_lumped_inertia(urdf::LinkConstSharedPtr link,
   }
   /// Inertia tensor must satisfy triangle inequality
   if ((I_eig(0) + I_eig(1) < I_eig(2)) || (I_eig(0) + I_eig(2) < I_eig(1)) ||
-      (I_eig(1) + I_eig(2) < I_eig(0))) {
+      (I_eig(1) + I_eig(2) < I_eig(0)))
+  {
     std::cerr << "compute_lumped_inertia: Lumped inertia tensor does not "
                  "satisfy triangle inequality."
               << std::endl;
@@ -218,8 +215,7 @@ main(int argc, char *argv[])
 
   if (robot) {
     const franka::RobotState robot_state = robot->readOnce();
-    std::cout << "Franka current state: " << std::endl
-              << robot_state << std::endl;
+    std::cout << "Franka current state: " << std::endl << robot_state << std::endl;
   }
 
   // parse URDF as file path or as content string
@@ -234,7 +230,7 @@ main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   urdf::LinkConstSharedPtr root_link =
-      urdf_model->getLink("panda_link8"); /// Flange (has no inertia info)
+    urdf_model->getLink("panda_link8"); /// Flange (has no inertia info)
 
   Eigen::Matrix4d T0 = Eigen::Matrix4d::Identity();
   double load_mass = 0;
@@ -246,8 +242,7 @@ main(int argc, char *argv[])
   if (compute_lumped_inertia(root_link, *urdf_model, T0, load_mass, com, I)) {
     std::cout << "URDF load mass: " << load_mass << std::endl;
     Eigen::Map<Eigen::Matrix3d> load_inertia__(load_inertia.data());
-    std::cout << "URDF load inertia: " << std::endl
-              << load_inertia__ << std::endl;
+    std::cout << "URDF load inertia: " << std::endl << load_inertia__ << std::endl;
     Eigen::Map<Eigen::Vector3d> F_x_Cload__(F_x_Cload.data());
     std::cout << "URDF load CoM: " << F_x_Cload__.transpose() << std::endl;
 
@@ -256,8 +251,7 @@ main(int argc, char *argv[])
     }
     return EXIT_SUCCESS;
   } else {
-    std::cerr << "Could not set lumped end-effector inertia. Shutting down ..."
-              << std::endl;
+    std::cerr << "Could not set lumped end-effector inertia. Shutting down ..." << std::endl;
     return EXIT_FAILURE;
   }
 }
