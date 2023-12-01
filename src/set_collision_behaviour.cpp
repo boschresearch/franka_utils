@@ -5,6 +5,7 @@
 
 // default values
 // https://github.com/frankaemika/libfranka/blob/0.10.0/examples/examples_common.cpp#L12-L20
+// clang-format off
 struct {
   // torque thresholds [Nm]
   const std::array<double, 7> lower_torque_thresholds_acceleration  = {{20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0}};
@@ -17,6 +18,7 @@ struct {
   const std::array<double, 6> lower_force_thresholds_nominal        = {{10.0, 10.0, 10.0, 10.0, 10.0, 10.0}};
   const std::array<double, 6> upper_force_thresholds_nominal        = lower_force_thresholds_nominal;
 } defaults;
+// clang-format on
 
 
 template <typename T, std::size_t N>
