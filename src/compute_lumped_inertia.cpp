@@ -36,7 +36,9 @@ template <typename l_t, typename I_t>
 void
 compute_lumped_inertia_impl(urdf::LinkConstSharedPtr link,
                             const urdf::ModelInterface &robot,
-                            const Eigen::Matrix4d &T, double &m, l_t &l,
+                            const Eigen::Matrix4d &T,
+                            double &m,
+                            l_t &l,
                             I_t &I)
 {
   // Read inertia properties of link
@@ -136,7 +138,9 @@ template <typename com_t, typename I_t>
 bool
 compute_lumped_inertia(urdf::LinkConstSharedPtr link,
                        const urdf::ModelInterface &robot,
-                       const Eigen::Matrix4d &T, double &m, com_t &com,
+                       const Eigen::Matrix4d &T,
+                       double &m,
+                       com_t &com,
                        I_t &I)
 {
   m = 0;
