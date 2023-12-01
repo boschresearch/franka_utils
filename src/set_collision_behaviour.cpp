@@ -55,8 +55,7 @@ main(int argc, char *argv[])
       multiply(threshold_scale, defaults.lower_force_thresholds_acceleration),
       multiply(threshold_scale, defaults.upper_force_thresholds_acceleration),
       multiply(threshold_scale, defaults.lower_force_thresholds_nominal),
-      multiply(threshold_scale, defaults.upper_force_thresholds_nominal)
-    );
+      multiply(threshold_scale, defaults.upper_force_thresholds_nominal));
     std::cout << "set F/T thresholds to '" << threshold_scale << "' x defaults" << std::endl;
     return EXIT_SUCCESS;
   } catch (const franka::NetworkException &e) {
