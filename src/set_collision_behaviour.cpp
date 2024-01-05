@@ -1,33 +1,36 @@
+#include <Eigen/Core>
 #include <franka/exception.h>
 #include <franka/robot.h>
 #include <iostream>
 
+
+template <int N>
+using Vector = Eigen::Matrix<double, 1, N>;
 
 // default values
 // https://github.com/frankaemika/libfranka/blob/0.10.0/examples/examples_common.cpp#L12-L20
 // clang-format off
 struct {
   // torque thresholds [Nm]
-  const std::array<double, 7> lower_torque_thresholds_acceleration  = {{20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0}};
-  const std::array<double, 7> upper_torque_thresholds_acceleration  = lower_torque_thresholds_acceleration;
-  const std::array<double, 7> lower_torque_thresholds_nominal       = {{10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0}};
-  const std::array<double, 7> upper_torque_thresholds_nominal       = lower_torque_thresholds_nominal;
+  const Vector<7> lower_torque_thresholds_acceleration  = {20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0};
+  const Vector<7> upper_torque_thresholds_acceleration  = lower_torque_thresholds_acceleration;
+  const Vector<7> lower_torque_thresholds_nominal       = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
+  const Vector<7> upper_torque_thresholds_nominal       = lower_torque_thresholds_nominal;
   // force thresholds [N]
-  const std::array<double, 6> lower_force_thresholds_acceleration   = {{20.0, 20.0, 20.0, 20.0, 20.0, 20.0}};
-  const std::array<double, 6> upper_force_thresholds_acceleration   = lower_force_thresholds_acceleration;
-  const std::array<double, 6> lower_force_thresholds_nominal        = {{10.0, 10.0, 10.0, 10.0, 10.0, 10.0}};
-  const std::array<double, 6> upper_force_thresholds_nominal        = lower_force_thresholds_nominal;
+  const Vector<6> lower_force_thresholds_acceleration   = {20.0, 20.0, 20.0, 20.0, 20.0, 20.0};
+  const Vector<6> upper_force_thresholds_acceleration   = lower_force_thresholds_acceleration;
+  const Vector<6> lower_force_thresholds_nominal        = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
+  const Vector<6> upper_force_thresholds_nominal        = lower_force_thresholds_nominal;
 } defaults;
 // clang-format on
 
 
-template <typename T, std::size_t N>
-std::array<T, N>
-multiply(const T &multiplier, const std::array<T, N> &array)
+template <typename T, typename Derived>
+std::array<T, Derived::ColsAtCompileTime>
+multiply(const T &multiplier, const Eigen::DenseBase<Derived> &array)
 {
-  std::array<T, N> out;
-  for (std::size_t i = 0; i < N; i++)
-    out[i] = multiplier * array[i];
+  std::array<T, Derived::ColsAtCompileTime> out;
+  Eigen::Map<Derived>(out.data()) = array.derived() * multiplier;
   return out;
 }
 
