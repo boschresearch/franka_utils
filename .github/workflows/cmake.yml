@@ -1,0 +1,69 @@
+name: CMake
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [Release]
+        c_compiler: [gcc, clang]
+        include:
+          - c_compiler: gcc
+            cpp_compiler: g++
+          - c_compiler: clang
+            cpp_compiler: clang++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=$GITHUB_WORKSPACE/build" >> "$GITHUB_OUTPUT"
+
+    - name: install build tools
+      run: |
+        apt update
+        apt install -y cmake ninja-build g++ clang git
+
+    - uses: DoozyX/clang-format-lint-action@v0.17
+      with:
+        clangFormatVersion: 14
+
+    - name: install libfranka
+      run: |
+        apt install -y libpoco-dev libeigen3-dev
+        git clone --recursive https://github.com/frankaemika/libfranka.git
+        cd libfranka
+        cmake -G Ninja -DBUILD_TESTS=OFF -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        cmake --build build --target install
+
+    - name: install dependencies
+      run: |
+        apt install -y liburdfdom-dev
+
+    - name: Configure CMake
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S $GITHUB_WORKSPACE
+
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+    - name: Test
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: ctest --build-config ${{ matrix.build_type }}
