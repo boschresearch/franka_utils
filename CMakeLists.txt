@@ -3,7 +3,7 @@ project(franka_utils)
 
 set(franka_utils_MAJOR_VERSION 0)
 set(franka_utils_MINOR_VERSION 1)
-set(franka_utils_PATCH_VERSION 0)
+set(franka_utils_PATCH_VERSION 1)
 set(franka_utils_VERSION
   ${franka_utils_MAJOR_VERSION}.${franka_utils_MINOR_VERSION}.${franka_utils_PATCH_VERSION})
 
