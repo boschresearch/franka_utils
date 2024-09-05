@@ -36,7 +36,7 @@ jobs:
     - name: install build tools
       run: |
         apt update
-        apt install -y cmake ninja-build g++ clang git
+        apt install -y --no-install-recommends ca-certificates cmake make ninja-build g++ clang git
 
     - uses: DoozyX/clang-format-lint-action@v0.18.2
       with:
@@ -44,7 +44,7 @@ jobs:
 
     - name: install libfranka
       run: |
-        apt install -y libpoco-dev libeigen3-dev
+        apt install -y --no-install-recommends libpoco-dev libeigen3-dev
         git clone --recursive --shallow-submodules --depth 1 https://github.com/frankaemika/libfranka.git --branch 0.13.3
         cd libfranka
         cmake -G Ninja -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -B build \
@@ -53,7 +53,7 @@ jobs:
 
     - name: install dependencies
       run: |
-        apt install -y liburdfdom-dev
+        apt install -y --no-install-recommends liburdfdom-dev
 
     - name: Configure CMake
       run: >

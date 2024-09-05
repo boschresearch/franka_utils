@@ -19,12 +19,12 @@ jobs:
     - name: install dependencies
       run: |
         apt update
-        apt -y install lcov python3-colcon-coveragepy-result python3-colcon-lcov-result
-        apt -y install ninja-build
+        apt install -y --no-install-recommends lcov python3-colcon-coveragepy-result python3-colcon-lcov-result
+        apt install -y --no-install-recommends ninja-build
 
     - name: install libfranka
       run: |
-        apt install -y libpoco-dev libeigen3-dev
+        apt install -y --no-install-recommends libpoco-dev libeigen3-dev
         git clone --recursive --shallow-submodules --depth 1 https://github.com/frankaemika/libfranka.git --branch 0.13.3
         cd libfranka
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -B build
