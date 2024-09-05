@@ -7,28 +7,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        distribution: ["humble", "jazzy"]
+
     container:
-      image: osrf/ros:humble-desktop
+      image: ros:${{ matrix.distribution }}-ros-core
 
     steps:
     - name: install dependencies
       run: |
         apt update
-        apt -y install lcov python3-colcon-coveragepy-result python3-colcon-lcov-result
-        apt -y install ninja-build
+        apt install -y --no-install-recommends lcov python3-colcon-coveragepy-result python3-colcon-lcov-result python3-colcon-common-extensions python3-colcon-mixin
+        apt install -y --no-install-recommends git build-essential ninja-build
+        apt install -y --no-install-recommends python3-rosdep python3-vcstool
+        rosdep init
 
     - name: install libfranka
       run: |
-        apt install -y libpoco-dev libeigen3-dev
-        git clone --recursive https://github.com/frankaemika/libfranka.git
+        apt install -y --no-install-recommends libpoco-dev libeigen3-dev
+        git clone --recursive --shallow-submodules --depth 1 https://github.com/frankaemika/libfranka.git --branch 0.13.3
         cd libfranka
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -B build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -B build
         cmake --build build --target install
 
     - uses: ros-tooling/action-ros-ci@v0.3
       with:
         package-name: franka_utils
-        target-ros2-distro: humble
+        target-ros2-distro: ${{ matrix.distribution }}
         colcon-defaults: |
           {
             "build": {

@@ -7,13 +7,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:22.04
 
     strategy:
       fail-fast: false
 
       matrix:
+        version: ["22.04", "24.04"]
         build_type: [Release]
         c_compiler: [gcc, clang]
         include:
@@ -21,6 +20,9 @@ jobs:
             cpp_compiler: g++
           - c_compiler: clang
             cpp_compiler: clang++
+
+    container:
+      image: ubuntu:${{ matrix.version }}
 
     steps:
     - uses: actions/checkout@v4
@@ -34,24 +36,24 @@ jobs:
     - name: install build tools
       run: |
         apt update
-        apt install -y cmake ninja-build g++ clang git
+        apt install -y --no-install-recommends ca-certificates cmake make ninja-build g++ clang git
 
-    - uses: DoozyX/clang-format-lint-action@v0.17
+    - uses: DoozyX/clang-format-lint-action@v0.18.2
       with:
         clangFormatVersion: 14
 
     - name: install libfranka
       run: |
-        apt install -y libpoco-dev libeigen3-dev
-        git clone --recursive https://github.com/frankaemika/libfranka.git
+        apt install -y --no-install-recommends libpoco-dev libeigen3-dev
+        git clone --recursive --shallow-submodules --depth 1 https://github.com/frankaemika/libfranka.git --branch 0.13.3
         cd libfranka
-        cmake -G Ninja -DBUILD_TESTS=OFF -B build \
+        cmake -G Ninja -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -B build \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         cmake --build build --target install
 
     - name: install dependencies
       run: |
-        apt install -y liburdfdom-dev
+        apt install -y --no-install-recommends liburdfdom-dev
 
     - name: Configure CMake
       run: >
