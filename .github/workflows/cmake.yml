@@ -38,7 +38,7 @@ jobs:
         apt update
         apt install -y cmake ninja-build g++ clang git
 
-    - uses: DoozyX/clang-format-lint-action@v0.17
+    - uses: DoozyX/clang-format-lint-action@v0.18.2
       with:
         clangFormatVersion: 14
 
