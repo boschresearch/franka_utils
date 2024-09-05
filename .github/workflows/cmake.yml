@@ -7,13 +7,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:22.04
 
     strategy:
       fail-fast: false
 
       matrix:
+        version: ["22.04", "24.04"]
         build_type: [Release]
         c_compiler: [gcc, clang]
         include:
@@ -21,6 +20,9 @@ jobs:
             cpp_compiler: g++
           - c_compiler: clang
             cpp_compiler: clang++
+
+    container:
+      image: ubuntu:${{ matrix.version }}
 
     steps:
     - uses: actions/checkout@v4

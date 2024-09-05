@@ -7,8 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        distribution: ["humble", "jazzy"]
+
     container:
-      image: osrf/ros:humble-desktop
+      image: osrf/ros:${{ matrix.distribution }}-desktop
 
     steps:
     - name: install dependencies
@@ -28,7 +33,7 @@ jobs:
     - uses: ros-tooling/action-ros-ci@v0.3
       with:
         package-name: franka_utils
-        target-ros2-distro: humble
+        target-ros2-distro: ${{ matrix.distribution }}
         colcon-defaults: |
           {
             "build": {
