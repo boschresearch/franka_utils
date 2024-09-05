@@ -34,7 +34,7 @@ find_package(urdfdom REQUIRED)
 find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_executable(compute_lumped_inertia src/compute_lumped_inertia.cpp)
-target_link_libraries(compute_lumped_inertia urdfdom_headers::urdfdom_headers urdfdom_model Eigen3::Eigen Franka::Franka)
+target_link_libraries(compute_lumped_inertia urdfdom_headers::urdfdom_headers urdfdom::urdfdom_model Eigen3::Eigen Franka::Franka)
 
 add_executable(set_collision_behaviour src/set_collision_behaviour.cpp)
 target_link_libraries(set_collision_behaviour Eigen3::Eigen Franka::Franka)
