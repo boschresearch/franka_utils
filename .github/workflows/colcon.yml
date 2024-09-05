@@ -22,7 +22,7 @@ jobs:
         apt install -y libpoco-dev libeigen3-dev
         git clone --recursive --shallow-submodules --depth 1 https://github.com/frankaemika/libfranka.git --branch 0.13.3
         cd libfranka
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -B build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -B build
         cmake --build build --target install
 
     - uses: ros-tooling/action-ros-ci@v0.3
